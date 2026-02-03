@@ -75,9 +75,23 @@ const Payment = ({ total, cart = [], onPaymentComplete }) => {
     };
 
     if (paymentSuccess) {
+        const handleNewOrder = () => {
+            // reset form so user can place another order
+            setPaymentSuccess(false);
+            setShowPaymentForm(false);
+            setCardNumber('');
+            setRawCardNumber('');
+            setCvv('');
+            setCardHolder('');
+            setErrors({ cardHolder: '', cardNumber: '', cvv: '' });
+        };
+
         return (
             <div className="alert alert-success" role="alert">
-                התשלום בוצע בהצלחה! תודה רבה.
+                <div>התשלום בוצע בהצלחה! תודה רבה.</div>
+                <div className="mt-2">
+                    <button className="btn btn-secondary" onClick={handleNewOrder}>הזמנה נוספת</button>
+                </div>
             </div>
         );
     }
