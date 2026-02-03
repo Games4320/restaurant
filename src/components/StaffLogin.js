@@ -3,7 +3,7 @@ import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
 import StaffPanel from './StaffPanel';
 
 // Props: orders (array)
-const StaffLogin = ({ orders = [], addMenuItem }) => {
+const StaffLogin = ({ orders = [], addMenuItem, menu = {}, removeMenuItem }) => {
     const [show, setShow] = useState(false);
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
@@ -12,6 +12,7 @@ const StaffLogin = ({ orders = [], addMenuItem }) => {
     const [newName, setNewName] = useState('');
     const [newDescription, setNewDescription] = useState('');
     const [newCategory, setNewCategory] = useState('מאכל');
+    const [newPrice, setNewPrice] = useState('10');
     const [addMsg, setAddMsg] = useState('');
 
     const handleClose = () => {
@@ -37,12 +38,14 @@ const StaffLogin = ({ orders = [], addMenuItem }) => {
             return;
         }
         if (addMenuItem) {
-            addMenuItem({ name: newName.trim(), description: newDescription.trim(), category: newCategory });
+            const priceNum = parseFloat(newPrice) || 10;
+            addMenuItem({ name: newName.trim(), description: newDescription.trim(), category: newCategory, price: priceNum });
             setAddMsg('הפריט נוסף בהצלחה.');
             // reset
             setNewName('');
             setNewDescription('');
             setNewCategory('מאכל');
+            setNewPrice('10');
             setTimeout(() => setAddMsg(''), 2500);
             setShowAddModal(false);
         } else {
@@ -128,6 +131,10 @@ const StaffLogin = ({ orders = [], addMenuItem }) => {
                             <option value="שתייה">שתייה</option>
                             <option value="קינוח">קינוח</option>
                         </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-2">
+                        <Form.Label>מחיר (ש"ח)</Form.Label>
+                        <Form.Control type="number" value={newPrice} onChange={e => setNewPrice(e.target.value)} />
                     </Form.Group>
                     {addMsg && <div className="text-success mt-2">{addMsg}</div>}
                 </Modal.Body>

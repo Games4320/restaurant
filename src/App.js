@@ -132,6 +132,16 @@ function App() {
     });
   };
 
+  const removeMenuItem = (id) => {
+    setMenu(prev => {
+      const next = {};
+      Object.keys(prev).forEach(k => {
+        next[k] = prev[k].filter(item => item.id !== id);
+      });
+      return next;
+    });
+  };
+
   const removeFromCart = (id) => {
     setCart(currentCart => currentCart.filter(item => item.id !== id));
   };
@@ -236,7 +246,7 @@ function App() {
           </div>
           <div className="col-md-4">
             {/* Staff login button/modal (one-time modal view) */}
-            <StaffLogin orders={orders} addMenuItem={addMenuItem} />
+            <StaffLogin orders={orders} addMenuItem={addMenuItem} menu={menu} removeMenuItem={removeMenuItem} />
 
             <Cart cart={cart} removeFromCart={removeFromCart} updateQuantity={updateQuantity} />
             <Payment total={getTotalPrice()} cart={cart} onPaymentComplete={handlePaymentComplete} />

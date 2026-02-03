@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const StaffPanel = ({ orders = [], addMenuItem }) => {
+const StaffPanel = ({ orders = [], addMenuItem, menu = {}, removeMenuItem }) => {
     const [showAdd, setShowAdd] = useState(false);
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -66,36 +66,36 @@ const StaffPanel = ({ orders = [], addMenuItem }) => {
                 </div>
             )}
 
-            <ul className="list-group mt-3">
-                {orders.length === 0 ? (
-                    <li className="list-group-item">אין הזמנות להצגה כרגע.</li>
+            <div className="mt-4">
+                <h5>תפריט נוכחי</h5>
+                {Object.keys(menu).length === 0 ? (
+                    <div className="text-muted">התפריט ריק.</div>
                 ) : (
-                    orders.map(order => (
-                        <li key={order.id} className="list-group-item">
-                            <div className="d-flex justify-content-between">
-                                <div>
-                                    <strong>הזמנה #{order.id}</strong>
-                                    <div className="text-muted small">{new Date(order.createdAt).toLocaleString()}</div>
-                                    <ul className="mb-0 mt-2">
-                                        {order.items && order.items.length > 0 ? (
-                                            order.items.map(it => (
-                                                <li key={it.id}>{it.name} x {it.quantity}</li>
-                                            ))
-                                        ) : (
-                                            <li>ריקה</li>
-                                        )}
-                                    </ul>
-                                </div>
-                                <div className="text-end">
-                                    <div>סה"כ: ₪{order.total.toFixed(2)}</div>
-                                    <div>כרטיס (4 ספרות אחרונות): {order.cardLast4 ? order.cardLast4 : '----'}</div>
-                                    {order.cardHolder && <div>שם בעל הכרטיס: {order.cardHolder}</div>}
-                                </div>
-                            </div>
-                        </li>
+                    Object.keys(menu).map(cat => (
+                        <div key={cat} className="mb-3">
+                            <h6>{cat}</h6>
+                            <ul className="list-group">
+                                {menu[cat].map(item => (
+                                    <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <strong>{item.name}</strong>
+                                            <div className="small text-muted">{item.description}</div>
+                                        </div>
+                                        <div className="text-end">
+                                            <div>₪{(item.price || 0).toFixed(2)}</div>
+                                            <button className="btn btn-sm btn-outline-danger mt-2" onClick={() => {
+                                                if (window.confirm('להסיר פריט זה מהתפריט?')) {
+                                                    removeMenuItem && removeMenuItem(item.id);
+                                                }
+                                            }}>הסר פריט</button>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     ))
                 )}
-            </ul>
+            </div>
         </div>
     );
 };
