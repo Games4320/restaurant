@@ -3,7 +3,7 @@ import { Modal, Button, Form, FloatingLabel } from 'react-bootstrap';
 import StaffPanel from './StaffPanel';
 
 // Props: orders (array)
-const StaffLogin = ({ orders = [] }) => {
+const StaffLogin = ({ orders = [], addMenuItem }) => {
     const [show, setShow] = useState(false);
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
@@ -60,7 +60,7 @@ const StaffLogin = ({ orders = [] }) => {
                         </>
                     ) : (
                         // show staff panel inside modal; closing modal will hide it (one-time view)
-                        <StaffPanel orders={orders} />
+                        <StaffPanel orders={orders} addMenuItem={addMenuItem} />
                     )}
                 </Modal.Body>
                 <Modal.Footer>
