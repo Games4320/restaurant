@@ -10,26 +10,43 @@ const Payment = ({ total, cart = [], onPaymentComplete }) => {
     const [expiry, setExpiry] = useState(''); // MM/YY
     const [cvv, setCvv] = useState(''); // will NOT be saved
     const [cardHolder, setCardHolder] = useState('');
+    const [errors, setErrors] = useState([]);
 
     const handlePayment = (e) => {
         e.preventDefault();
+
+        // Validate required fields
+        const nextErrors = [];
+        if (!cardHolder || cardHolder.trim().length === 0) nextErrors.push('נא להזין את שם בעל הכרטיס.');
+        if (!rawCardNumber || rawCardNumber.length !== 16) nextErrors.push('מספר כרטיס חייב להכיל 16 ספרות.');
+        const expiryRe = /^(0[1-9]|1[0-2])\/[0-9]{2}$/;
+        if (!expiryRe.test(expiry)) nextErrors.push('תוקף חייב להיות בפורמט MM/YY.');
+        if (!cvv || cvv.length !== 3) nextErrors.push('יש להזין CVV של 3 ספרות.');
+
+        if (nextErrors.length > 0) {
+            setErrors(nextErrors);
+            return;
+        }
+
+        setErrors([]);
+
         // Simulate payment processing
-            setTimeout(() => {
-                setPaymentSuccess(true);
-                if (onPaymentComplete) {
-                    const maskedLast4 = rawCardNumber ? rawCardNumber.slice(-4) : null;
-                    const order = {
-                        id: Date.now(),
-                        items: cart,
-                        total,
-                        cardLast4: maskedLast4,
-                        expiry: expiry,
-                        cardHolder: cardHolder || null,
-                        createdAt: new Date().toISOString()
-                    };
-                    onPaymentComplete(order);
-                }
-            }, 1000);
+        setTimeout(() => {
+            setPaymentSuccess(true);
+            if (onPaymentComplete) {
+                const maskedLast4 = rawCardNumber ? rawCardNumber.slice(-4) : null;
+                const order = {
+                    id: Date.now(),
+                    items: cart,
+                    total,
+                    cardLast4: maskedLast4,
+                    expiry: expiry,
+                    cardHolder: cardHolder || null,
+                    createdAt: new Date().toISOString()
+                };
+                onPaymentComplete(order);
+            }
+        }, 1000);
     };
 
     const handleCardNumberChange = (e) => {
@@ -62,6 +79,14 @@ const Payment = ({ total, cart = [], onPaymentComplete }) => {
             {showPaymentForm && (
                 <div className="card p-4">
                     <h3>פרטי תשלום</h3>
+                    {errors.length > 0 && (
+                        <div className="alert alert-danger" role="alert">
+                            <ul className="mb-0">
+                                {errors.map((err, idx) => <li key={idx}>{err}</li>)}
+                            </ul>
+                        </div>
+                    )}
+
                     <form onSubmit={handlePayment}>
                         <div className="mb-3">
                             <label htmlFor="cardHolder" className="form-label">שם בעל הכרטיס</label>
