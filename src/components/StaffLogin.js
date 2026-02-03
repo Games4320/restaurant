@@ -8,6 +8,11 @@ const StaffLogin = ({ orders = [], addMenuItem }) => {
     const [code, setCode] = useState('');
     const [error, setError] = useState('');
     const [authenticated, setAuthenticated] = useState(false);
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [newName, setNewName] = useState('');
+    const [newDescription, setNewDescription] = useState('');
+    const [newCategory, setNewCategory] = useState('מאכל');
+    const [addMsg, setAddMsg] = useState('');
 
     const handleClose = () => {
         setShow(false);
@@ -23,6 +28,25 @@ const StaffLogin = ({ orders = [], addMenuItem }) => {
             setError('');
         } else {
             setError('קוד שגוי, נסה שוב.');
+        }
+    };
+
+    const handleAddSubmit = () => {
+        if (!newName || newName.trim().length === 0) {
+            setAddMsg('יש להזין שם פריט.');
+            return;
+        }
+        if (addMenuItem) {
+            addMenuItem({ name: newName.trim(), description: newDescription.trim(), category: newCategory });
+            setAddMsg('הפריט נוסף בהצלחה.');
+            // reset
+            setNewName('');
+            setNewDescription('');
+            setNewCategory('מאכל');
+            setTimeout(() => setAddMsg(''), 2500);
+            setShowAddModal(false);
+        } else {
+            setAddMsg('לא ניתן להוסיף פריט - פונקציה לא זמינה.');
         }
     };
 
@@ -60,7 +84,10 @@ const StaffLogin = ({ orders = [], addMenuItem }) => {
                         </>
                     ) : (
                         // show staff panel inside modal; closing modal will hide it (one-time view)
-                        <StaffPanel orders={orders} addMenuItem={addMenuItem} />
+                        <>
+                            <StaffPanel orders={orders} addMenuItem={addMenuItem} />
+                            {addMsg && <div className="mt-2 text-success">{addMsg}</div>}
+                        </>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
@@ -72,6 +99,41 @@ const StaffLogin = ({ orders = [], addMenuItem }) => {
                             כניסה
                         </Button>
                     )}
+                    {authenticated && (
+                        <>
+                            <Button variant="outline-primary" onClick={() => setShowAddModal(true)}>הוסף פריט</Button>
+                        </>
+                    )}
+                </Modal.Footer>
+            </Modal>
+
+            {/* Add Item modal opened from footer button */}
+            <Modal show={showAddModal} onHide={() => setShowAddModal(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>הוסף פריט חדש</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form.Group className="mb-2">
+                        <Form.Label>שם הפריט</Form.Label>
+                        <Form.Control value={newName} onChange={e => setNewName(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-2">
+                        <Form.Label>תיאור הפריט</Form.Label>
+                        <Form.Control as="textarea" rows={3} value={newDescription} onChange={e => setNewDescription(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-2">
+                        <Form.Label>קטגוריית הפריט</Form.Label>
+                        <Form.Select value={newCategory} onChange={e => setNewCategory(e.target.value)}>
+                            <option value="מאכל">מאכל</option>
+                            <option value="שתייה">שתייה</option>
+                            <option value="קינוח">קינוח</option>
+                        </Form.Select>
+                    </Form.Group>
+                    {addMsg && <div className="text-success mt-2">{addMsg}</div>}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowAddModal(false)}>ביטול</Button>
+                    <Button variant="primary" onClick={handleAddSubmit}>הוסף</Button>
                 </Modal.Footer>
             </Modal>
         </>
