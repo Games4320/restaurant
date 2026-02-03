@@ -102,7 +102,6 @@ function App() {
             items: order.items,
             total: order.total,
             cardLast4: order.cardLast4,
-            expiry: order.expiry,
             cardHolder: order.cardHolder
           })
         });
@@ -149,7 +148,6 @@ function App() {
           items: itemsText,
           total: order.total,
           cardLast4: order.cardLast4,
-          expiry: order.expiry,
           cardHolder: order.cardHolder
         };
 

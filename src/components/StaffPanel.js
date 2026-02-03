@@ -30,7 +30,6 @@ const StaffPanel = ({ orders = [] }) => {
                             <div className="text-end">
                                 <div>סה"כ: ₪{order.total.toFixed(2)}</div>
                                 <div>כרטיס (4 ספרות אחרונות): {order.cardLast4 ? order.cardLast4 : '----'}</div>
-                                <div>תוקף: {order.expiry ? order.expiry : '----'}</div>
                                 {order.cardHolder && <div>שם בעל הכרטיס: {order.cardHolder}</div>}
                             </div>
                         </div>

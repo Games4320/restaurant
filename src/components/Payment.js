@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
 
 // Props: total, cart (array of items), onPaymentComplete(orderData)
-// Security note: we DO NOT store CVV. We only store the first 4 digits (masked), expiry and cardHolder for demo purposes.
+// Security note: we DO NOT store CVV. We only store the first 4 digits (masked) and cardHolder for demo purposes.
 const Payment = ({ total, cart = [], onPaymentComplete }) => {
     const [showPaymentForm, setShowPaymentForm] = useState(false);
     const [paymentSuccess, setPaymentSuccess] = useState(false);
     const [cardNumber, setCardNumber] = useState(''); // formatted (with spaces)
     const [rawCardNumber, setRawCardNumber] = useState(''); // digits only
-    const [expiry, setExpiry] = useState(''); // MM/YY
+    // expiry removed: we don't collect or store card expiry
     const [cvv, setCvv] = useState(''); // will NOT be saved
     const [cardHolder, setCardHolder] = useState('');
     // per-field error messages
-    const [errors, setErrors] = useState({ cardHolder: '', cardNumber: '', expiry: '', cvv: '' });
+    const [errors, setErrors] = useState({ cardHolder: '', cardNumber: '', cvv: '' });
 
     const handlePayment = (e) => {
         e.preventDefault();
 
         // Validate required fields (collect per-field messages)
-        const nextErrors = { cardHolder: '', cardNumber: '', expiry: '', cvv: '' };
+    const nextErrors = { cardHolder: '', cardNumber: '', cvv: '' };
         if (!cardHolder || cardHolder.trim().length === 0) nextErrors.cardHolder = 'נא להזין את שם בעל הכרטיס.';
         if (!rawCardNumber || rawCardNumber.length !== 16) nextErrors.cardNumber = 'מספר כרטיס חייב להכיל 16 ספרות.';
-        const expiryRe = /^(0[1-9]|1[0-2])\/[0-9]{2}$/;
-        if (!expiryRe.test(expiry)) nextErrors.expiry = 'תוקף חייב להיות בפורמט MM/YY.';
         if (!cvv || cvv.length !== 3) nextErrors.cvv = 'יש להזין CVV של 3 ספרות.';
 
         // If any field has an error, show them and stop
@@ -32,7 +30,7 @@ const Payment = ({ total, cart = [], onPaymentComplete }) => {
         }
 
         // clear errors
-        setErrors({ cardHolder: '', cardNumber: '', expiry: '', cvv: '' });
+    setErrors({ cardHolder: '', cardNumber: '', cvv: '' });
 
         // Simulate payment processing
         setTimeout(() => {
@@ -44,7 +42,6 @@ const Payment = ({ total, cart = [], onPaymentComplete }) => {
                     items: cart,
                     total,
                     cardLast4: maskedLast4,
-                    expiry: expiry,
                     cardHolder: cardHolder || null,
                     createdAt: new Date().toISOString()
                 };
@@ -70,10 +67,6 @@ const Payment = ({ total, cart = [], onPaymentComplete }) => {
         }
         if (field === 'cardNumber') {
             return (!value || value.length !== 16) ? 'מספר כרטיס חייב להכיל 16 ספרות.' : '';
-        }
-        if (field === 'expiry') {
-            const expiryRe = /^(0[1-9]|1[0-2])\/[0-9]{2}$/;
-            return (!expiryRe.test(value)) ? 'תוקף חייב להיות בפורמט MM/YY.' : '';
         }
         if (field === 'cvv') {
             return (!value || value.length !== 3) ? 'יש להזין CVV של 3 ספרות.' : '';
@@ -145,24 +138,7 @@ const Payment = ({ total, cart = [], onPaymentComplete }) => {
                         </div>
 
                         <div className="row">
-                            <div className="col-md-6 mb-3">
-                                <label htmlFor="expiryDate" className="form-label">תוקף (MM/YY)</label>
-                                <input
-                                    type="text"
-                                    className={`form-control ${errors.expiry ? 'is-invalid' : ''}`}
-                                    id="expiryDate"
-                                    placeholder="MM/YY"
-                                    maxLength="5"
-                                    value={expiry}
-                                    onChange={(e) => {
-                                        const v = e.target.value;
-                                        setExpiry(v);
-                                        setErrors(prev => ({ ...prev, expiry: validateField('expiry', v) }));
-                                    }}
-                                />
-                                {errors.expiry && <div className="invalid-feedback d-block">{errors.expiry}</div>}
-                            </div>
-                            <div className="col-md-6 mb-3">
+                            <div className="col-12 mb-3">
                                 <label htmlFor="cvv" className="form-label">CVV</label>
                                 <input
                                     type="tel"
